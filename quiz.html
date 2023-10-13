@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgb(236, 236, 236);
+        }
+
+        #quiz-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .question {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .options li {
+            margin: 5px 0;
+            cursor: pointer;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .options li.selected {
+            background-color: #3498db;
+            color: white;
+        }
+        .options li:hover {
+            background-color: #f0f0f0;
+        }
+
+        .feedback {
+            margin-top: 10px;
+        }
+
+        #submit-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #submit-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>Interactive Quiz</h1>
+        <div id="question" class="question"></div>
+        <ul id="options" class="options"></ul>
+        <p id="feedback" class="feedback"></p>
+        <button id="submit-button">Submit</button>
+    </div>
+
+    <script>
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const feedbackElement = document.getElementById('feedback');
+        const submitButton = document.getElementById('submit-button');
+
+        const quizQuestions = [
+            {
+                question: 'What is the capital of France?',
+                options: ['London', 'Berlin', 'Paris', 'Madrid'],
+                correctAnswer: 2,
+            },
+            {
+                question: 'Which planet is known as the Red Planet?',
+                options: ['Earth', 'Mars', 'Venus', 'Jupiter'],
+                correctAnswer: 1,
+            },
+            {
+                question: 'What is the largest mammal in the world?',
+                options: ['Giraffe', 'Elephant', 'Blue Whale', 'Hippopotamus'],
+                correctAnswer: 2, 
+            },
+            {
+                question: 'What is the largest planet in our solar system?',
+                options: ['Venus', 'Mars', 'Jupiter', 'Saturn'],
+                correctAnswer: 2, 
+            },
+            {
+                question: 'Which gas do plants absorb from the atmosphere?',
+                options: ['Oxygen', 'Carbon Dioxide', 'Hydrogen', 'Nitrogen'],
+                correctAnswer: 1,
+            },
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        loadQuestion();
+
+        submitButton.addEventListener('click', checkAnswer);
+
+        function loadQuestion() {
+            const currentQuestion = quizQuestions[currentQuestionIndex];
+            questionElement.textContent = currentQuestion.question;
+
+            const options = currentQuestion.options.map((option, index) => {
+                return `<li data-index="${index}">${option}</li>`;
+            });
+
+            optionsElement.innerHTML = options.join('');
+        }
+
+        function checkAnswer() {
+            const selectedOption = optionsElement.querySelector('.selected');
+            if (selectedOption) {
+                const selectedAnswerIndex = parseInt(selectedOption.getAttribute('data-index'));
+                const currentQuestion = quizQuestions[currentQuestionIndex];
+
+                if (selectedAnswerIndex === currentQuestion.correctAnswer) {
+                    feedbackElement.textContent = 'Correct!';
+                    feedbackElement.style.color = 'green';
+                    score++;
+                } else {
+                    feedbackElement.textContent = 'Incorrect. The correct answer is: ' + currentQuestion.options[currentQuestion.correctAnswer];
+                    feedbackElement.style.color = 'red';
+                }
+
+                currentQuestionIndex++;
+
+                if (currentQuestionIndex < quizQuestions.length) {
+                    loadQuestion();
+                    feedbackElement.textContent = '';
+                    optionsElement.querySelector('.selected').classList.remove('selected');
+                } else {
+                    finishQuiz();
+                }
+            }
+        }
+
+        optionsElement.addEventListener('click', (event) => {
+            if (event.target.tagName === 'LI') {
+                optionsElement.querySelectorAll('li').forEach((option) => {
+                    option.classList.remove('selected');
+                });
+                event.target.classList.add('selected');
+            }
+        });
+
+        function finishQuiz() {
+            questionElement.textContent = 'Quiz Completed!';
+            optionsElement.innerHTML = '';
+            feedbackElement.textContent = 'Your Score: ' + score + ' out of ' + quizQuestions.length;
+            submitButton.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
